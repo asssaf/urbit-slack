@@ -73,17 +73,30 @@
   ?~  aud
     ~&  %message-source-unclear
     ~
-  =*  msg  r.r.q.gram
+  (process-message p.gram r.r.q.gram)
+
+++  process-message
+  |=  {who/@p msg/speech:talk}
   ?+  msg
     ~&  [%unprocessed-message-type -:msg]
     ~
   {$lin *}  ::  Regular message.
     =+  tmsg=(trip q.msg)
-    (send-slack p.gram (crip "{tmsg}"))
+    (send-slack who (crip "{tmsg}"))
+  ::
   {$url *}  ::  URL
     =+  pur=p.msg
-    %+  send-slack  p.gram
-    (crip "<{(earf pur)}>")
+    (send-slack who (crip "<{(earf pur)}>"))
+  ::
+  {$exp *}  ::  hoon line
+    =+  exp=(trip p.msg)
+    (send-slack who (crip "`{exp}`"))
+  ::
+  {$fat *}  ::  attachment
+    ~&  fat=msg
+    :: TODO deal with attachement
+    :: deal with speech
+    (process-message who q.msg)
   ==
 
 ++  send
@@ -110,6 +123,7 @@
       %-  taco  %-  crip  %-  pojo  %-  jobe  :~
         text+s+txt
         username+s+pusr
+        mrkdwn+b+&
       ==
   ==
   `[ost %hiss /send-ext ~ %httr [%hiss hiz]]
