@@ -73,30 +73,66 @@
   ?~  aud
     ~&  %message-source-unclear
     ~
-  (process-message p.gram r.r.q.gram)
+  =+  txt=(process-speech r.r.q.gram)
+  ?~  txt
+    ~
+  (send-slack p.gram u.txt)
 
-++  process-message
-  |=  {who/@p msg/speech:talk}
+++  process-speech
+  |=  msg/speech:talk
+  ^-  (unit {@t json})
   ?+  msg
     ~&  [%unprocessed-message-type -:msg]
     ~
   {$lin *}  ::  Regular message.
     =+  tmsg=(trip q.msg)
-    (send-slack who (crip "{tmsg}"))
+    `text+s+(crip "{tmsg}")
   ::
   {$url *}  ::  URL
     =+  pur=p.msg
-    (send-slack who (crip "<{(earf pur)}>"))
+    `text+s+(crip "<{(earf pur)}>")
   ::
   {$exp *}  ::  hoon line
     =+  exp=(trip p.msg)
-    (send-slack who (crip "`{exp}`"))
+    `text+s+(crip "`{exp}`")
   ::
   {$fat *}  ::  attachment
-    ~&  fat=msg
-    :: TODO deal with attachement
     :: deal with speech
-    (process-message who q.msg)
+    =+  pretxt=(process-speech q.msg)
+    ?~  pretxt
+      ~
+    ?.  ?=({$text *} u.pretxt)
+      ~&  [%unsupported-fat-speech -.u.pretxt]
+      ~
+    :: deal with attachment
+    ?+  p.msg
+      ~&  [%unsupported-torso-type p.msg]
+      ~
+    {$tank *}
+      ~&  [%tank q=+.p.msg]
+      =/  txt
+      %-  role
+      %+  turn
+        ^-  wall
+        %-  zing
+        ^-  (list wall)
+        %+  turn  +.p.msg
+        |=(tan/tank (wash 0^50 tan))
+      crip
+      %-  some
+      :-  %attachments
+      ^-  json
+      :-  %a
+      :~
+        %-  jobe
+        :~
+          pretext++.u.pretxt
+          text+s+txt
+          :-  'mrkdwn_in'
+            [%a [s+'pretext' ~]]
+        ==
+      ==
+    ==
   ==
 
 ++  send
@@ -111,7 +147,7 @@
   ==
 
 ++  send-slack
-  |=  {usr/@p txt/@t}
+  |=  {usr/@p content/{@t json}}
   ^-  (unit move)
   ?~  slack
     ~&  %slack-url-not-set
@@ -121,7 +157,7 @@
   :*  (scan (need slack) auri:epur)
       %post  ~  ~
       %-  taco  %-  crip  %-  pojo  %-  jobe  :~
-        text+s+txt
+        content
         username+s+pusr
         mrkdwn+b+&
       ==
