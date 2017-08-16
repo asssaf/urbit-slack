@@ -15,7 +15,8 @@
   $%  {$join s/station:talk}
       {$leave s/station:talk}
       {$joined $~}
-      {$slack s/(unit tape)}
+      {$slack s/(unit tape)}                    :: set slack webhook url
+      {$channel s/station:talk c/(unit cord)}   :: map station to slack channel
   ==
 ++  state
   $:  $1
@@ -69,6 +70,13 @@
   {$slack *}
     ~&  [%setting-slack s.a]
     [~ +>.$(slack s.a)]
+  {$channel *}
+    ~&  [%map-slack-channel s.a c.a]
+    =.  channelmap
+    ?~  c.a
+      (~(del by channelmap) s.a)
+    (~(put by channelmap) s.a (need c.a))
+    [~ +>.$]
   ==
 
 ++  diff-talk-report
@@ -94,7 +102,7 @@
   =+  txt=(process-speech r.r.q.gram)
   ?~  txt
     ~
-  (send-slack p.gram u.txt)
+  (send-slack p.gram u.txt (~(get by channelmap) u.aud))
 
 ++  process-speech
   |=  msg/speech:talk
@@ -171,7 +179,7 @@
   ==
 
 ++  send-slack
-  |=  {usr/@p content/{@t json}}
+  |=  {usr/@p content/{@t json} channel/(unit @t)}
   ^-  (unit move)
   ?~  slack
     ~&  %slack-url-not-set
@@ -184,6 +192,7 @@
         content
         username+s+pusr
         mrkdwn+b+&
+        channel+s+(fall channel '')
       ==
   ==
   `[ost %hiss /send-ext ~ %httr [%hiss hiz]]
