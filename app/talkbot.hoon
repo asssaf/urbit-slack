@@ -79,7 +79,7 @@
     ~
   {$lin *}  ::  Regular message.
     =+  tmsg=(trip q.msg)
-    (send-slack (crip "{(scow %p p.gram)}: {tmsg}"))
+    (send-slack (crip "{(cite p.gram)}: {tmsg}"))
   ==
 
 ++  send
