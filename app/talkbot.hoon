@@ -80,6 +80,10 @@
   {$lin *}  ::  Regular message.
     =+  tmsg=(trip q.msg)
     (send-slack (crip "{(cite p.gram)}: {tmsg}"))
+  {$url *}  ::  URL
+    =+  pur=p.msg
+    (send-slack (crip "{(cite p.gram)}: <{(earf pur)}>"))
+
   ==
 
 ++  send
