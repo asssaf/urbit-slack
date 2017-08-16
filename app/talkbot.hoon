@@ -195,12 +195,15 @@
         channel+s+(fall channel '')
       ==
   ==
-  `[ost %hiss /send-ext ~ %httr [%hiss hiz]]
+  `[ost %hiss /send-slack ~ %httr [%hiss hiz]]
 
 ++  sigh-httr
   |=  {way/wire res/httr}
   ^-  {(list move) _+>.$}
   ::~&  [%sigh way=way res=res]
+  ?.  =(200 p.res)
+    ~&  [%response p=p.res r=r.res]
+    [~ +>.$]
   [~ +>.$]
 
 ++  sigh-tang
