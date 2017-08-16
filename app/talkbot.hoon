@@ -86,7 +86,13 @@
     ~
   {$lin *}  ::  Regular message.
     =+  tmsg=(trip q.msg)
-    `text+s+(crip "{tmsg}")
+    %-  some
+    :-  %text
+    :-  %s
+    %-  crip
+    ?:  p.msg
+      "{tmsg}"
+    "_{tmsg}_"
   ::
   {$url *}  ::  URL
     =+  pur=p.msg
