@@ -18,13 +18,31 @@
       {$slack s/(unit tape)}
   ==
 ++  state
-  $:  $0
+  $:  $1
       joined/(list station:talk)
       slack/(unit tape)
+      channelmap/(map station:talk cord)
+  ==
+++  oldstate
+  $%  state
+      {$0 joined/(list station:talk) slack/(unit tape)}
   ==
 --
 
 |_  {bowl state}
+
+:: adapt old state
+++  prep
+  |=  old/(unit oldstate)
+  ^-  (quip move +>)
+  ?~  old
+    [~ +>]
+  ?-  u.old
+  {$0 *}
+    [~ +>(+<+ [%1 joined.+<.u.old slack.+>.old ~])]
+  {$1 *}
+    [~ +>(+<+ u.old)]
+  ==
 
 ++  poke-noun
   |=  a/action
