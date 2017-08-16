@@ -79,11 +79,11 @@
     ~
   {$lin *}  ::  Regular message.
     =+  tmsg=(trip q.msg)
-    (send-slack (crip "{(cite p.gram)}: {tmsg}"))
+    (send-slack p.gram (crip "{tmsg}"))
   {$url *}  ::  URL
     =+  pur=p.msg
-    (send-slack (crip "{(cite p.gram)}: <{(earf pur)}>"))
-
+    %+  send-slack  p.gram
+    (crip "<{(earf pur)}>")
   ==
 
 ++  send
@@ -98,16 +98,18 @@
   ==
 
 ++  send-slack
-  |=  a/@t
+  |=  {usr/@p txt/@t}
   ^-  (unit move)
   ?~  slack
     ~&  %slack-url-not-set
     ~
+  =+  pusr=(crip (cite usr))
   =/  hiz
   :*  (scan (need slack) auri:epur)
       %post  ~  ~
       %-  taco  %-  crip  %-  pojo  %-  jobe  :~
-        text+s+a
+        text+s+txt
+        username+s+pusr
       ==
   ==
   `[ost %hiss /send-ext ~ %httr [%hiss hiz]]
