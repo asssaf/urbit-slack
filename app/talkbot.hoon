@@ -87,32 +87,36 @@
     [~ +>.$]
   {$grams *}  ::  Message list.
     :_  +>.$
-    %+  murn  q.rep
-      |=  gram/telegram:talk
-      (read-telegram wir gram)
+    %-  zing
+    %+  turn  q.rep
+    |=  gram/telegram:talk
+    (read-telegram wir gram)
   ==
 
 ++  read-telegram
   |=  {wir/wire gram/telegram:talk}
-  ^-  (unit move)
+  ^-  (list move)
+  ?~  slack
+    ~&  %slack-url-not-set
+    ~
   =+  aud=(station-from-wire wir)
   ?~  aud
     ~&  %message-source-unclear
     ~
-  =+  txt=(process-speech r.r.q.gram)
-  ?~  txt
-    ~
-  (send-slack p.gram u.txt (~(get by channelmap) u.aud))
+  %+  turn  (process-speech r.r.q.gram)
+  |=  result/{@t json}
+  ^-  move
+  (send-slack `@p`p.gram `{@t json}`result `(unit @t)`(~(get by channelmap) u.aud))
 
 ++  process-speech
   |=  msg/speech:talk
-  ^-  (unit {@t json})
+  ^-  (list {@t json})
   ?+  msg
     ~&  [%unprocessed-message-type -:msg]
     ~
   {$lin *}  ::  Regular message.
     =+  tmsg=(trip q.msg)
-    %-  some
+    :_  ~
     :-  %text
     :-  %s
     %-  crip
@@ -122,26 +126,32 @@
   ::
   {$url *}  ::  URL
     =+  pur=p.msg
-    `text+s+(crip "<{(earf pur)}>")
+    ~[text+s+(crip "<{(earf pur)}>")]
   ::
   {$exp *}  ::  hoon line
     =+  exp=(trip p.msg)
-    `text+s+(crip "`{exp}`")
+    ~[text+s+(crip "`{exp}`")]
+  ::
+  {$mor *}  ::  multiplex
+    %-  zing
+    %+  turn  p.msg
+    |=  s/speech:talk
+    (process-speech s)
   ::
   {$fat *}  ::  attachment
     :: deal with speech
     =+  pretxt=(process-speech q.msg)
     ?~  pretxt
       ~
-    ?.  ?=({$text *} u.pretxt)
-      ~&  [%unsupported-fat-speech -.u.pretxt]
+    :: TODO deal with a list of results
+    ?.  ?=({$text *} -.pretxt)
+      ~&  [%unsupported-fat-speech -.pretxt]
       ~
     :: deal with attachment
     ?+  p.msg
       ~&  [%unsupported-torso-type p.msg]
       ~
     {$tank *}
-      ~&  [%tank q=+.p.msg]
       =/  txt
       %-  role
       %+  turn
@@ -151,14 +161,14 @@
         %+  turn  +.p.msg
         |=(tan/tank (wash 0^50 tan))
       crip
-      %-  some
+      :_  ~
       :-  %attachments
       ^-  json
       :-  %a
       :~
         %-  jobe
         :~
-          pretext++.u.pretxt
+          pretext++.-.pretxt
           text+s+txt
           :-  'mrkdwn_in'
             [%a [s+'pretext' ~]]
@@ -180,10 +190,7 @@
 
 ++  send-slack
   |=  {usr/@p content/{@t json} channel/(unit @t)}
-  ^-  (unit move)
-  ?~  slack
-    ~&  %slack-url-not-set
-    ~
+  ^-  move
   =+  pusr=(crip (cite usr))
   =/  hiz
   :*  (scan (need slack) auri:epur)
@@ -195,7 +202,7 @@
         channel+s+(fall channel '')
       ==
   ==
-  `[ost %hiss /send-slack ~ %httr [%hiss hiz]]
+  [ost %hiss /send-slack ~ %httr [%hiss hiz]]
 
 ++  sigh-httr
   |=  {way/wire res/httr}
