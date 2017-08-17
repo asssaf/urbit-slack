@@ -199,10 +199,17 @@
         content
         username+s+pusr
         mrkdwn+b+&
+        (iconurl usr)
         channel+s+(fall channel '')
       ==
   ==
   [ost %hiss /send-slack ~ %httr [%hiss hiz]]
+
+++  iconurl
+  |=  usr/@p
+  :-  'icon_url'
+  :-  %s
+  (rap 3 'https://robohash.org/' (scot %p usr) ~)
 
 ++  sigh-httr
   |=  {way/wire res/httr}
