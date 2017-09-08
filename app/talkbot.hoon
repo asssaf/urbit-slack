@@ -151,9 +151,11 @@
     ?+  p.msg
       ~&  [%unsupported-torso-type p.msg]
       ~
-    {$tank *}
+    {?($tank $text) *}
       =/  txt
       %-  role
+      ?:  ?=($text -.p.msg)
+        +.p.msg
       %+  turn
         ^-  wall
         %-  zing
