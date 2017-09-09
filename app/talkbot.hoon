@@ -173,7 +173,7 @@
           pretext++.-.pretxt
           text+s+txt
           :-  'mrkdwn_in'
-            [%a [s+'pretext' ~]]
+            [%a [s+'pretext' s+'text' ~]]
         ==
       ==
     ==
@@ -200,7 +200,7 @@
       %-  taco  %-  crip  %-  pojo  %-  jobe  :~
         content
         username+s+pusr
-        mrkdwn+b+&
+        mrkdwn+b+|
         (iconurl usr)
         channel+s+(fall channel '')
       ==
