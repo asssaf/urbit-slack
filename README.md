@@ -18,7 +18,7 @@ Slack integration talkbot (based on the example in [urbit by doing](https://gith
 
   Optionally, map the station to a slack channel:
   ```
-  > :talkbot [%channel [our ~.sandbox] '#urbit-sandbox']
+  > :talkbot [%channel [our ~.sandbox] `'#urbit-sandbox']
   ```
 
 4. Configure the slack integration  
