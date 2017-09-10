@@ -138,6 +138,9 @@
     |=  s/speech:talk
     (process-speech s)
   ::
+  {$app *}  ::  app message
+    ~[text+s+(rap 3 p.msg ': ' q.msg ~)]
+  ::
   {$fat *}  ::  attachment
     :: deal with speech
     =+  pretxt=(process-speech q.msg)
